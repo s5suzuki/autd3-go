@@ -4,7 +4,7 @@
  * Created Date: 16/06/2022
  * Author: Shun Suzuki
  * -----
- * Last Modified: 16/06/2022
+ * Last Modified: 22/06/2022
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2022 Shun Suzuki. All rights reserved.
@@ -133,12 +133,20 @@ func (cnt *Controller) SetForceFan(value bool) {
 	C.AUTDSetForceFan(cnt.Ptr, C.bool(value))
 }
 
-func (cnt *Controller) GetCheckAck() bool {
-	return bool(C.AUTDGetCheckAck(cnt.Ptr))
+func (cnt *Controller) GetCheckTrials() int {
+	return int(C.AUTDGetCheckTrials(cnt.Ptr))
 }
 
-func (cnt *Controller) SetCheckAck(value bool) {
-	C.AUTDSetCheckAck(cnt.Ptr, C.bool(value))
+func (cnt *Controller) SetCheckTrials(value int) {
+	C.AUTDSetCheckTrials(cnt.Ptr, C.int(value))
+}
+
+func (cnt *Controller) GetSendInterval() int {
+	return int(C.AUTDGetSendInterval(cnt.Ptr))
+}
+
+func (cnt *Controller) SetSendInterval(value int) {
+	C.AUTDSetSendInterval(cnt.Ptr, C.int(value))
 }
 
 func (cnt *Controller) GetReadsFPGAInfo() bool {
@@ -182,8 +190,7 @@ func (cnt *Controller) SetTransCycle(devId int, transIdx int, value uint16) {
 }
 
 func (cnt *Controller) GetWavelength(devId int, transIdx int) float64 {
-	c := cnt.GetSoundSpeed()
-	return float64(C.AUTDGetWavelength(cnt.Ptr, C.int(devId), C.int(transIdx), C.double(c)))
+	return float64(C.AUTDGetWavelength(cnt.Ptr, C.int(devId), C.int(transIdx)))
 }
 
 func (cnt *Controller) NumDevices() int {

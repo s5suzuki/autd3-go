@@ -18,7 +18,7 @@ done
 if [ "$FLG_VERSION" = "TRUE" ]; then
   :
 else
-  VERSION="2.2.0"
+  VERSION="2.2.1"
 fi
 
 if [ "$FLG_FORCE" != "TRUE" ]; then
