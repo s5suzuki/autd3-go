@@ -4,7 +4,7 @@
  * Created Date: 16/06/2022
  * Author: Shun Suzuki
  * -----
- * Last Modified: 16/06/2022
+ * Last Modified: 08/08/2022
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2022 Shun Suzuki. All rights reserved.
@@ -25,16 +25,20 @@ import (
 )
 
 type Emulator struct {
-	ptr unsafe.Pointer
+	port uint16
+	cnt  *autd3.Controller
 }
 
 func NewEmulator(port uint16, cnt *autd3.Controller) *Emulator {
 	l := new(Emulator)
-	l.ptr = unsafe.Pointer(nil)
-	C.AUTDLinkEmulator(&l.ptr, C.ushort(port), cnt.Ptr)
+	l.port = port
+	l.cnt = cnt
 	return l
 }
 
-func (l *Emulator) Ptr() unsafe.Pointer {
-	return l.ptr
+func (link *Emulator) Build() *autd3.Link {
+	l := new(autd3.Link)
+	l.Ptr = unsafe.Pointer(nil)
+	C.AUTDLinkEmulator(&l.Ptr, C.ushort(link.port), link.cnt.Ptr)
+	return l
 }

@@ -4,7 +4,7 @@
  * Created Date: 16/06/2022
  * Author: Shun Suzuki
  * -----
- * Last Modified: 16/06/2022
+ * Last Modified: 08/08/2022
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2022 Shun Suzuki. All rights reserved.
@@ -140,13 +140,13 @@ func NewSDP(backend IBackend, param ...float64) *SDP {
 	alpha := 1e-3
 	lambda := 0.9
 	var repeat uint64 = 100
-	if len(param) != 0 {
+	if len(param) > 0 {
 		alpha = param[0]
 	}
-	if len(param) != 1 {
+	if len(param) > 1 {
 		lambda = param[1]
 	}
-	if len(param) != 2 {
+	if len(param) > 2 {
 		repeat = uint64(param[2])
 	}
 
@@ -162,7 +162,7 @@ func NewEVD(backend IBackend, param ...float64) *EVD {
 	g := new(EVD)
 	g.P = unsafe.Pointer(nil)
 	gamma := 1.0
-	if len(param) != 0 {
+	if len(param) > 0 {
 		gamma = param[0]
 	}
 
@@ -191,7 +191,7 @@ func NewGS(backend IBackend, param ...uint64) *GS {
 	g.P = unsafe.Pointer(nil)
 
 	var repeat uint64 = 100
-	if len(param) != 0 {
+	if len(param) > 0 {
 		repeat = param[0]
 	}
 
@@ -208,7 +208,7 @@ func NewGSPAT(backend IBackend, param ...uint64) *GSPAT {
 	g.P = unsafe.Pointer(nil)
 
 	var repeat uint64 = 100
-	if len(param) != 0 {
+	if len(param) > 0 {
 		repeat = param[0]
 	}
 
@@ -228,16 +228,16 @@ func NewLM(backend IBackend, param ...float64) *LM {
 	eps2 := 1e-8
 	tau := 1e-3
 	var kMax uint64 = 5
-	if len(param) != 0 {
+	if len(param) > 0 {
 		eps1 = param[0]
 	}
-	if len(param) != 1 {
+	if len(param) > 1 {
 		eps2 = param[1]
 	}
-	if len(param) != 2 {
+	if len(param) > 2 {
 		tau = param[2]
 	}
-	if len(param) != 3 {
+	if len(param) > 3 {
 		kMax = uint64(param[3])
 	}
 
@@ -254,10 +254,56 @@ func NewGreedy(backend IBackend, param ...int) *Greedy {
 	g.P = unsafe.Pointer(nil)
 
 	phaseDiv := 16
-	if len(param) != 0 {
+	if len(param) > 0 {
 		phaseDiv = param[0]
 	}
 
 	C.AUTDGainHoloGreedy(&g.P, backend.Ptr(), C.int(phaseDiv))
+	return g
+}
+
+type LSSGreedy struct {
+	Holo
+}
+
+func NewLSSGreedy(backend IBackend, param ...int) *LSSGreedy {
+	g := new(Greedy)
+	g.P = unsafe.Pointer(nil)
+
+	phaseDiv := 16
+	if len(param) > 0 {
+		phaseDiv = param[0]
+	}
+
+	C.AUTDGainHoloLSSGreedy(&g.P, backend.Ptr(), C.int(phaseDiv))
+	return g
+}
+
+type APO struct {
+	Holo
+}
+
+func NewAPO(backend IBackend, param ...float64) *APO {
+	g := new(LM)
+	g.P = unsafe.Pointer(nil)
+
+	eps := 1e-8
+	lambda := 1.0
+	var kMax int32 = 200
+	var lineSearchMax int32 = 100
+	if len(param) > 0 {
+		eps = param[0]
+	}
+	if len(param) > 1 {
+		lambda = param[1]
+	}
+	if len(param) > 2 {
+		kMax = int32(param[2])
+	}
+	if len(param) > 3 {
+		lineSearchMax = int32(param[3])
+	}
+
+	C.AUTDGainHoloAPO(&g.P, backend.Ptr(), C.double(eps), C.double(lambda), C.int(kMax), C.int(lineSearchMax))
 	return g
 }

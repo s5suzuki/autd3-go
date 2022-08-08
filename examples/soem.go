@@ -4,7 +4,7 @@
  * Created Date: 15/06/2022
  * Author: Shun Suzuki
  * -----
- * Last Modified: 16/06/2022
+ * Last Modified: 08/08/2022
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2022 Shun Suzuki. All rights reserved.
@@ -57,8 +57,7 @@ func main() {
 	cnt.AddDevice([3]float64{0, 0, 0}, [3]float64{0, 0, 0})
 
 	ifname := getAdapter()
-	soem.RegisterOnLostCallback(onLost)
-	link := soem.NewSOEM(ifname, cnt.NumDevices(), 1, true)
+	link := soem.NewSOEM(ifname, cnt.NumDevices()).OnLost(onLost).Build()
 
 	if !cnt.Open(link) {
 		println(autd3.GetLastError())
