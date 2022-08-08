@@ -4,7 +4,7 @@
  * Created Date: 16/06/2022
  * Author: Shun Suzuki
  * -----
- * Last Modified: 16/06/2022
+ * Last Modified: 08/08/2022
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2022 Shun Suzuki. All rights reserved.
@@ -21,6 +21,8 @@ import "C"
 import (
 	"strings"
 	"unsafe"
+
+	"github.com/shinolab/autd3-go/v2/autd3"
 )
 
 type Adapter struct {
@@ -29,7 +31,13 @@ type Adapter struct {
 }
 
 type SOEM struct {
-	ptr unsafe.Pointer
+	ifname        string
+	devNum        string
+	sendCycle     uint16
+	sync0Cycle    uint16
+	highPrecision bool
+	freerun       bool
+	callback      func(string)
 }
 
 var _callback *func(string)
@@ -41,7 +49,7 @@ func onLostCallback(msg *C.char) {
 	}
 }
 
-func RegisterOnLostCallback(callback func(string)) {
+func registerOnLostCallback(callback func(string)) {
 	_callback = &callback
 }
 
@@ -61,15 +69,53 @@ func EnumerateAdapters() []Adapter {
 	return adapters
 }
 
-func NewSOEM(ifname string, devNum int, cycleTicks int, highPrecision bool) *SOEM {
+func NewSOEM(ifname string, devNum int) *SOEM {
 	l := new(SOEM)
-	l.ptr = unsafe.Pointer(nil)
-	callback := unsafe.Pointer(nil)
-	C.AUTDLinkSOEMGetCallback(&callback)
-	C.AUTDLinkSOEM(&l.ptr, C.CString(ifname), C.int(devNum), C.ushort(cycleTicks), callback, C.bool(highPrecision))
+	l.ifname = ifname
+	l.devNum = l.devNum
+	l.sendCycle = 1
+	l.sync0Cycle = 1
+	l.highPrecision = false
+	l.freerun = false
+	l.callback = nil
 	return l
 }
 
-func (l *SOEM) Ptr() unsafe.Pointer {
-	return l.ptr
+func (l *SOEM) SendCycle(cycle uint16) *SOEM {
+	l.sendCycle = cycle
+	return l
+}
+
+func (l *SOEM) Sync0Cycle(cycle uint16) *SOEM {
+	l.sync0Cycle = cycle
+	return l
+}
+
+func (l *SOEM) HighPrecision(flag bool) *SOEM {
+	l.highPrecision = flag
+	return l
+}
+
+func (l *SOEM) FreeRun(flag bool) *SOEM {
+	l.freerun = flag
+	return l
+}
+
+func (l *SOEM) OnLost(onLost func(string)) *SOEM {
+	l.callback = onLost
+	return l
+}
+
+func (link *SOEM) Build() *autd3.Link {
+	l := new(autd3.Link)
+	l.Ptr = unsafe.Pointer(nil)
+
+	if link.callback != nil {
+		registerOnLostCallback(link.callback)
+	}
+
+	callback := unsafe.Pointer(nil)
+	C.AUTDLinkSOEMGetCallback(&callback)
+	C.AUTDLinkSOEM(&l.Ptr, C.CString(link.ifname), C.int(link.devNum), C.ushort(link.sync0Cycle), C.ushort(link.sendCycle), C.bool(link.freerun), callback, C.bool(link.highPrecision))
+	return l
 }

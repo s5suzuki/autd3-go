@@ -4,7 +4,7 @@
  * Created Date: 16/06/2022
  * Author: Shun Suzuki
  * -----
- * Last Modified: 16/06/2022
+ * Last Modified: 08/08/2022
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2022 Shun Suzuki. All rights reserved.
@@ -24,11 +24,11 @@ type Amplitudes struct {
 	ptr unsafe.Pointer
 }
 
-func NewAmplitudes(cnt *Controller, value float64) *Amplitudes {
+func NewAmplitudes(value float64) *Amplitudes {
 	config := new(Amplitudes)
 	config.ptr = unsafe.Pointer(nil)
 
-	C.AUTDCreateAmplitudes(&config.ptr, cnt.Ptr, C.double(value))
+	C.AUTDCreateAmplitudes(&config.ptr, C.double(value))
 
 	return config
 }

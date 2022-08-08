@@ -4,7 +4,7 @@
  * Created Date: 16/06/2022
  * Author: Shun Suzuki
  * -----
- * Last Modified: 22/06/2022
+ * Last Modified: 08/08/2022
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2022 Shun Suzuki. All rights reserved.
@@ -29,21 +29,6 @@ type Controller struct {
 	Ptr unsafe.Pointer
 }
 
-func ToLegacy() {
-	C.AUTDSetMode(0)
-	C.AUTDSetModeHolo(0)
-}
-
-func ToNormal() {
-	C.AUTDSetMode(1)
-	C.AUTDSetModeHolo(1)
-}
-
-func ToNormalPhase() {
-	C.AUTDSetMode(2)
-	C.AUTDSetModeHolo(2)
-}
-
 func NewController() *Controller {
 	cnt := new(Controller)
 	cnt.Ptr = unsafe.Pointer(nil)
@@ -59,6 +44,18 @@ func (cnt *Controller) Delete() {
 	cnt.Ptr = unsafe.Pointer(nil)
 }
 
+func (cnt *Controller) ToLegacy() {
+	C.AUTDSetMode(cnt.Ptr, 0)
+}
+
+func (cnt *Controller) ToNormal() {
+	C.AUTDSetMode(cnt.Ptr, 1)
+}
+
+func (cnt *Controller) ToNormalPhase() {
+	C.AUTDSetMode(cnt.Ptr, 2)
+}
+
 func (cnt *Controller) AddDevice(pos [3]float64, rot [3]float64) int {
 	return int(C.AUTDAddDevice(cnt.Ptr, C.double(pos[0]), C.double(pos[1]), C.double(pos[2]), C.double(rot[0]), C.double(rot[1]), C.double(rot[2])))
 }
@@ -67,8 +64,8 @@ func (cnt *Controller) AddDeviceQuaternion(pos [3]float64, rot [4]float64) int {
 	return int(C.AUTDAddDeviceQuaternion(cnt.Ptr, C.double(pos[0]), C.double(pos[1]), C.double(pos[2]), C.double(rot[0]), C.double(rot[1]), C.double(rot[2]), C.double(rot[3])))
 }
 
-func (cnt *Controller) Open(link Link) bool {
-	return bool(C.AUTDOpenController(cnt.Ptr, link.Ptr()))
+func (cnt *Controller) Open(link *Link) bool {
+	return bool(C.AUTDOpenController(cnt.Ptr, link.Ptr))
 }
 
 func (cnt *Controller) Clear() int {
