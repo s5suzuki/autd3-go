@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "../base/header.hpp"
+#include "header.hpp"
 
 AUTD_DEPENDS_EXT_LIB
 
