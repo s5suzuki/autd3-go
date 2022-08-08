@@ -267,7 +267,7 @@ type LSSGreedy struct {
 }
 
 func NewLSSGreedy(backend IBackend, param ...int) *LSSGreedy {
-	g := new(Greedy)
+	g := new(LSSGreedy)
 	g.P = unsafe.Pointer(nil)
 
 	phaseDiv := 16
@@ -284,7 +284,7 @@ type APO struct {
 }
 
 func NewAPO(backend IBackend, param ...float64) *APO {
-	g := new(LM)
+	g := new(APO)
 	g.P = unsafe.Pointer(nil)
 
 	eps := 1e-8

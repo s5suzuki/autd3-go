@@ -32,7 +32,7 @@ type Adapter struct {
 
 type SOEM struct {
 	ifname        string
-	devNum        string
+	devNum        int
 	sendCycle     uint16
 	sync0Cycle    uint16
 	highPrecision bool
@@ -72,7 +72,7 @@ func EnumerateAdapters() []Adapter {
 func NewSOEM(ifname string, devNum int) *SOEM {
 	l := new(SOEM)
 	l.ifname = ifname
-	l.devNum = l.devNum
+	l.devNum = devNum
 	l.sendCycle = 1
 	l.sync0Cycle = 1
 	l.highPrecision = false

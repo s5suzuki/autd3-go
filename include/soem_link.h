@@ -25,6 +25,8 @@ EXPORT_AUTD void AUTDGetAdapter(IN void* p_adapter, IN int32_t index, OUT char* 
 EXPORT_AUTD void AUTDFreeAdapterPointer(IN void* p_adapter);
 EXPORT_AUTD void AUTDLinkSOEM(OUT void** out, IN const char* ifname, IN int32_t device_num, IN uint16_t sync0_cycle, IN uint16_t send_cycle,
                               IN bool freerun, IN void* on_lost, IN bool high_precision);
+extern void onLostCallback(char*);
+static inline void AUTDLinkSOEMGetCallback(void** out) { *out = &onLostCallback; }
 #ifdef __cplusplus
 }
 #endif
