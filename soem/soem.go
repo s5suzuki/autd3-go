@@ -4,7 +4,7 @@
  * Created Date: 16/06/2022
  * Author: Shun Suzuki
  * -----
- * Last Modified: 08/08/2022
+ * Last Modified: 14/08/2022
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2022 Shun Suzuki. All rights reserved.
@@ -69,15 +69,20 @@ func EnumerateAdapters() []Adapter {
 	return adapters
 }
 
-func NewSOEM(ifname string, devNum int) *SOEM {
+func NewSOEM(devNum int) *SOEM {
 	l := new(SOEM)
-	l.ifname = ifname
+	l.ifname = ""
 	l.devNum = devNum
 	l.sendCycle = 1
 	l.sync0Cycle = 1
 	l.highPrecision = false
 	l.freerun = false
 	l.callback = nil
+	return l
+}
+
+func (l *SOEM) Ifname(ifname string) *SOEM {
+	l.ifname = ifname
 	return l
 }
 
@@ -116,6 +121,10 @@ func (link *SOEM) Build() *autd3.Link {
 
 	callback := unsafe.Pointer(nil)
 	C.AUTDLinkSOEMGetCallback(&callback)
-	C.AUTDLinkSOEM(&l.Ptr, C.CString(link.ifname), C.int(link.devNum), C.ushort(link.sync0Cycle), C.ushort(link.sendCycle), C.bool(link.freerun), callback, C.bool(link.highPrecision))
+	if link.ifname == "" {
+		C.AUTDLinkSOEM(&l.Ptr, nil, C.int(link.devNum), C.ushort(link.sync0Cycle), C.ushort(link.sendCycle), C.bool(link.freerun), callback, C.bool(link.highPrecision))
+	} else {
+		C.AUTDLinkSOEM(&l.Ptr, C.CString(link.ifname), C.int(link.devNum), C.ushort(link.sync0Cycle), C.ushort(link.sendCycle), C.bool(link.freerun), callback, C.bool(link.highPrecision))
+	}
 	return l
 }
