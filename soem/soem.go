@@ -32,7 +32,6 @@ type Adapter struct {
 
 type SOEM struct {
 	ifname        string
-	devNum        int
 	sendCycle     uint16
 	sync0Cycle    uint16
 	highPrecision bool
@@ -69,10 +68,9 @@ func EnumerateAdapters() []Adapter {
 	return adapters
 }
 
-func NewSOEM(devNum int) *SOEM {
+func NewSOEM() *SOEM {
 	l := new(SOEM)
 	l.ifname = ""
-	l.devNum = devNum
 	l.sendCycle = 1
 	l.sync0Cycle = 1
 	l.highPrecision = false
@@ -122,9 +120,9 @@ func (link *SOEM) Build() *autd3.Link {
 	callback := unsafe.Pointer(nil)
 	C.AUTDLinkSOEMGetCallback(&callback)
 	if link.ifname == "" {
-		C.AUTDLinkSOEM(&l.Ptr, nil, C.int(link.devNum), C.ushort(link.sync0Cycle), C.ushort(link.sendCycle), C.bool(link.freerun), callback, C.bool(link.highPrecision))
+		C.AUTDLinkSOEM(&l.Ptr, nil,  C.ushort(link.sync0Cycle), C.ushort(link.sendCycle), C.bool(link.freerun), callback, C.bool(link.highPrecision))
 	} else {
-		C.AUTDLinkSOEM(&l.Ptr, C.CString(link.ifname), C.int(link.devNum), C.ushort(link.sync0Cycle), C.ushort(link.sendCycle), C.bool(link.freerun), callback, C.bool(link.highPrecision))
+		C.AUTDLinkSOEM(&l.Ptr, C.CString(link.ifname), C.ushort(link.sync0Cycle), C.ushort(link.sendCycle), C.bool(link.freerun), callback, C.bool(link.highPrecision))
 	}
 	return l
 }

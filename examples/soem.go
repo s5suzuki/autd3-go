@@ -33,7 +33,7 @@ func main() {
 
 	cnt.AddDevice([3]float64{0, 0, 0}, [3]float64{0, 0, 0})
 
-	link := soem.NewSOEM(cnt.NumDevices()).HighPrecision(true).OnLost(onLost).Build()
+	link := soem.NewSOEM().HighPrecision(true).OnLost(onLost).Build()
 
 	if !cnt.Open(link) {
 		println(autd3.GetLastError())
