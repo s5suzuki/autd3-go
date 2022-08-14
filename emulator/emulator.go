@@ -34,7 +34,7 @@ func NewEmulator() *Emulator {
 	return l
 }
 
-func (l *Emulator) LocalAmsNetId(port uint16) *Emulator {
+func (l *Emulator) Port(port uint16) *Emulator {
 	l.port = port
 	return l
 }

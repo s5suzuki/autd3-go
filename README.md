@@ -1,6 +1,6 @@
 # autd3-go
 
-version 2.3.0
+version 2.3.1
 
 ## Run examples
 

@@ -4,7 +4,7 @@
  * Created Date: 15/06/2022
  * Author: Shun Suzuki
  * -----
- * Last Modified: 08/08/2022
+ * Last Modified: 14/08/2022
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2022 Shun Suzuki. All rights reserved.
@@ -14,7 +14,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"autd3-go-example/samples"
@@ -28,36 +27,13 @@ func onLost(msg string) {
 	os.Exit(-1)
 }
 
-func getAdapter() string {
-	adapters := soem.EnumerateAdapters()
-	for i, adapter := range adapters {
-		fmt.Printf("[%d]: %s, %s\n", i, adapter.Desc, adapter.Name)
-	}
-
-	fmt.Print("choose: ")
-
-	var i int
-	if _, err := fmt.Scanln(&i); err != nil {
-		fmt.Printf("failed to read integer: %s\n", err)
-		os.Exit(-1)
-	}
-
-	if i >= len(adapters) {
-		fmt.Print("index out of range\n")
-		os.Exit(-1)
-	}
-
-	return adapters[i].Name
-}
-
 func main() {
 	cnt := autd3.NewController()
 	defer cnt.Delete()
 
 	cnt.AddDevice([3]float64{0, 0, 0}, [3]float64{0, 0, 0})
 
-	ifname := getAdapter()
-	link := soem.NewSOEM(ifname, cnt.NumDevices()).OnLost(onLost).Build()
+	link := soem.NewSOEM(cnt.NumDevices()).HighPrecision(true).OnLost(onLost).Build()
 
 	if !cnt.Open(link) {
 		println(autd3.GetLastError())
